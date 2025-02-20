@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "LLDB",
+            "type": "lldb-dap",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/${workspaceFolderBasename}",
+            "args": [
+                "one",
+                "two",
+                "three"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "FOO": "1",
+                "BAR": ""
+            }
+        }
+    ]
+}

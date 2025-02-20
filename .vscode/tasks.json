@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "clang++ -std=c++23 -I${fileDirname}/include ${fileDirname}/*.cpp -o ${fileDirname}/output"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "rm -f ${fileDirname}/output"
+            ],
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "logVariables",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "echo ${workspaceFolder} >> /tmp/variables.log; echo ${workspaceFolderBasename} >> /tmp/variables.log; echo ${file} >> /tmp/variables.log; echo ${relativeFile} >> /tmp/variables.log; echo ${fileBasename} >> /tmp/variables.log; echo ${fileBasenameNoExtension} >> /tmp/variables.log; echo ${fileDirname} >> /tmp/variables.log; echo ${fileExtname} >> /tmp/variables.log; echo ${cwd} >> /tmp/variables.log; echo ${lineNumber} >> /tmp/variables.log; echo ${execPath} >> /tmp/variables.log; echo ${defaultBuildTask} >> /tmp/variables.log"
+            ],
+            "group": "none",
+            "problemMatcher": []
+        }
+    ]
+}

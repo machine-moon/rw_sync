@@ -1,0 +1,53 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled static libraries
+*.lib
+*.a
+
+# Compiled dynamic libraries
+*.dll
+*.dylib
+*.so
+
+# Executable files
+*.exe
+*.out
+*.app
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+build/
+bin/
+
+:
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Backup files
+*.bak
+*.old
+*.orig
+
+# Cache files
+*.cache
+
+# Coverage files
+*.gcno
+*.gcda
+*.gcov
+
+# Other
+.DS_Store
+Thumbs.db
