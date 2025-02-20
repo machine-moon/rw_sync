@@ -16,6 +16,23 @@
                 "FOO": "1",
                 "BAR": ""
             }
+        },
+        {
+            "name": "lldb",
+            "type": "lldb-dap",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+            "args": [
+                "one",
+                "two",
+                "three"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "FOO": "1",
+                "BAR": ""
+            },
+            "preLaunchTask": "build"
         }
     ]
 }

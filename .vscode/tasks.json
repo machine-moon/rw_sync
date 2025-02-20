@@ -7,7 +7,7 @@
             "command": "bash",
             "args": [
                 "-c",
-                "clang++ -std=c++23 -I${fileDirname}/include ${fileDirname}/*.cpp -o ${fileDirname}/output"
+                "clang++ -std=c++23 -stdlib=libc++ -g -o ${workspaceFolder}/bin/${fileBasenameNoExtension} ${file}"
             ],
             "group": {
                 "kind": "build",
