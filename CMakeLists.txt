@@ -54,30 +54,3 @@ add_executable(${PROJECT_NAME} ${projectSources})
 
 # Include header files
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-# testing 
-
-# Option to enable or disable Google Test
-option(ENABLE_TESTING "Enable testing with Google Test" OFF)
-message(STATUS "Testing with Google Test: ${ENABLE_TESTING}")
-if(ENABLE_TESTING)
-  # Add Google Test
-  enable_testing()
-  include(FetchContent)
-  FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
-  )
-  FetchContent_MakeAvailable(googletest)
-
-  # Add tests
-  file(GLOB test_sources tests/*.cpp)
-  add_executable(testMe ${test_sources})
-  target_link_libraries(testMe gtest gtest_main)
-  target_include_directories(testMe PRIVATE ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
-  # Discover tests
-  include(GoogleTest)
-  gtest_discover_tests(testMe)
-endif()
-

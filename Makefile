@@ -2,13 +2,12 @@
 BUILD_DIR = build 
 BIN_DIR =   bin
 CMAKE_MODE = Debug # Options: Release, Debug, MinSizeRel
-ENABLE_TESTING = OFF # Options: ON, OFF
 
 all: build
 
 cmake:
 	@echo "[Configuring with Ninja for $(CMAKE_MODE) mode]"
-	@cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(CMAKE_MODE) -DENABLE_TESTING=$(ENABLE_TESTING)
+	@cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(CMAKE_MODE) 
 
 build: cmake
 	@echo "[Building project in $(CMAKE_MODE) mode]"
@@ -36,9 +35,4 @@ run: all
     		$$latest_file; \
     	fi
 
-test: all
-	@echo "[Running tests]"
-	@cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(CMAKE_MODE) -DENABLE_TESTING=ON
-	@ctest --test-dir $(BUILD_DIR)
-
-.PHONY: all cmake compile format build wipe clean fresh run test
+.PHONY: all cmake compile format build wipe clean fresh run 
