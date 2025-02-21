@@ -16,7 +16,7 @@ if(NOT CMAKE_CXX_COMPILER)
 endif()
 
 # Set the project name
-project(zuper VERSION 1.0 LANGUAGES CXX)
+project(rw_sync VERSION 1.0 LANGUAGES CXX)
 
 # Set output directory for executables
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
