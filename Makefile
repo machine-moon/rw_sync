@@ -2,7 +2,7 @@
 BUILD_DIR = build 
 BIN_DIR =   bin
 CMAKE_MODE = Debug # Options: Release, Debug, MinSizeRel
-
+LOG_DIR = logs
 all: build
 
 cmake:
@@ -23,6 +23,8 @@ wipe:
 	@rm -rf $(BIN_DIR)
 	@echo "[Cleaning build directory]"
 	@rm -rf $(BUILD_DIR)
+	@echo "[Cleaning log directory]"
+	@rm -rf $(LOG_DIR)
 
 fresh: wipe all 
 
@@ -34,5 +36,12 @@ run: all
     		echo "[Running project $$latest_file]"; \
     		$$latest_file; \
     	fi
+log:
+	@echo "[printing latest log file]"
+	@latest_file=$$(find $(LOG_DIR) -type f -printf '%T@ %p\n' | sort -k1,1nr | head -n 1 | cut -d' ' -f2); \
+		if [ -n "$$latest_file" ]; then \
+			echo "[Found log file: $$latest_file]"; \
+			cat $$latest_file; \
+		fi
 
 .PHONY: all cmake compile format build wipe clean fresh run 

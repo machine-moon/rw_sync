@@ -9,7 +9,14 @@ SharedData<T>::SharedData(std::string logfile) : data(10, 0), size(10), turn(1),
 template<typename T>
 SharedData<T>::~SharedData() {
     std::cout << "Writing to log file." << std::endl;
-    std::ofstream logFile(this->logfile, std::ios::out | std::ios::app);
+    std::string logFilePath = "logs/" + this->logfile;
+    std::filesystem::create_directories("logs");
+    int counter = 1;
+    while (std::ifstream(logFilePath)) {
+        logFilePath = "logs/" + this->logfile + "_" + std::to_string(counter);
+        counter++;
+    }
+    std::ofstream logFile(logFilePath, std::ios::out | std::ios::app);
     if (logFile.is_open()) {
         for (const auto &item: this->data) {
             logFile << item << std::endl;
