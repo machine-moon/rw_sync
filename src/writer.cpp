@@ -3,24 +3,34 @@
 #include <iostream>
 #include <thread>
 
-std::mutex Writer::rw_mutex;
-std::counting_semaphore<1> Writer::write_semaphore(1);
+template<typename T>
+std::mutex Writer<T>::rw_mutex;
 
-Writer::Writer() {}
+template<typename T>
+Writer<T>::Writer(uint8_t id, SharedData<T> &shared_data) : id(id), data(shared_data), turn(this->data.getSema()) {}
 
-void Writer::operator()() {
+
+template<typename T>
+void Writer<T>::operator()() {
     while (true) {
-        write_semaphore.acquire(); // Writer locks the semaphore
+        turn.acquire(); // Writer locks the semaphore
 
         // Critical section for writer
         {
-            std::lock_guard<std::mutex> lock(rw_mutex);
-            std::cout << "Writer is writing." << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(200)); // Simulate writing
+            std::cout << "Writer is adding their ID." << std::endl;
+            data.add(static_cast<T>(this->id));
         }
 
-        write_semaphore.release(); // Writer unlocks the semaphore
-
+        turn.release(); // Writer unlocks the semaphore
+        this->write_count++;
+        if (this->write_count >= this->id) {
+            break;
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(200)); // Simulate time between writes
     }
 }
+
+template class Writer<int>;
+template class Writer<float>;
+template class Writer<double>;
+template class Writer<char>;
