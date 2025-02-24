@@ -26,10 +26,9 @@ void Reader<T>::operator()() {
         }
 
         {
-            std::cout << "Reader " << id << " is reading. "
-                      << "Front: " << data.Front() << ", Back: " << data.Back() << ", Size: " << data.getSize()
-                      << ", Data: at(0): " << data.At(0) << ", at(1): " << data.At(1) << ", at(2): " << data.At(2)
-                      << std::endl;
+            std::cout << "Reader " << id << " is reading. " << "Front: " << data.Front() << ", Back: " << data.Back()
+                      << ", Size: " << data.getSize() << ", Data: at(0): " << data.At(0) << ", at(1): " << data.At(1)
+                      << ", at(2): " << data.At(2) << std::endl;
         }
 
         // Exit section for readers
