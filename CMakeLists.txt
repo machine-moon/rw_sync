@@ -49,8 +49,13 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -Wall -Wextra -Werror -pedantic")
 # Find all source files
 file(GLOB projectSources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
+# Set project name if not defined
+if(NOT EXECUTABLE_NAME)
+  set(EXECUTABLE_NAME ${PROJECT_NAME})
+endif()
+
 # Create executable
-add_executable(${PROJECT_NAME} ${projectSources})
+add_executable(${EXECUTABLE_NAME} ${projectSources})
 
 # Include header files
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(${EXECUTABLE_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
