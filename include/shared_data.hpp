@@ -9,15 +9,12 @@
 template<typename T>
 class SharedData {
 public:
-    explicit SharedData(std::string logfile);
+    explicit SharedData(std::string const &logfile);
     ~SharedData();
-    std::vector<T> &getData();
     size_t getSize() const;
     std::binary_semaphore &getSema();
     T Front() const;
     T Back() const;
-    typename std::vector<T>::const_iterator Begin() const;
-    typename std::vector<T>::const_iterator End() const;
     T At(size_t index) const;
     void add(T value);
 

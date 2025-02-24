@@ -5,9 +5,9 @@ LOG_DIR = logs
 
 # OPTIONS
 # Options: Debug, Release, MinSizeRel, RelWithDebInfo
-DEFAULT_BUILD_TYPE = RelWithDebInfo 
+DEFAULT_BUILD_TYPE = RelWithDebInfo
 MODE = RelWithDebInfo
-EXENAME = zuper
+EXENAME = rw_sync
 
 # Find all source files and save to a variable
 FILES := $(shell find include src -type f \( -name '*.hpp' -o -name '*.cpp' \))
@@ -15,14 +15,14 @@ FILES := $(shell find include src -type f \( -name '*.hpp' -o -name '*.cpp' \))
 all: build
 
 all-modes:
-	@echo "[Building all modes]"
-	@make MODE=RelWithDebInfo
+	@echo "\n[Building all modes]\n"
 	@make MODE=Debug
 	@make MODE=Release
 	@make MODE=MinSizeRel
+	@make MODE=RelWithDebInfo
 
 cmake:
-	@echo "[Configuring with Ninja for $(MODE) mode]"
+	@echo "\n[Configuring with Ninja for $(MODE) mode]\n"
 	@cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(MODE) -DDEFAULT_BUILD_TYPE=$(DEFAULT_BUILD_TYPE) -DEXECUTABLE_NAME=$(EXENAME)
 
 build: cmake
@@ -30,28 +30,28 @@ build: cmake
 	@cmake --build $(BUILD_DIR)
 
 test: 
-	@echo "[Running tests]"
+	@echo "\n[Running tests]\n"
 	@ctest --test-dir $(BUILD_DIR) -C $(MODE)
 	
-check:
-	@echo "[Running cppcheck]"
-	@cppcheck --enable=all --inconclusive --std=c++23 $(FILES)
+check: build
+	@echo "\n[Running cppcheck]\n"
+	@cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem --suppress=unmatchedSuppression --std=c++23 --cppcheck-build-dir=$(BUILD_DIR) src/*.cpp
 
 lint:
-	@echo "[Running clang-format (1/2)]"
+	@echo "\n[Running clang-format]\n"
 	@clang-format -i -verbose $(FILES)
-	@echo "[Running clang-tidy (2/2)]"
+	@echo "\n[Running clang-tidy]\n"
 	@clang-tidy $(FILES) -- -std=c++23
 
 valgrind:
-	@echo "[Checking for memory leaks]"
+	@echo "\n[Checking for memory leaks in $(DEFAULT_BUILD_TYPE) mode]\n"
 	@mkdir -p $(LOG_DIR)
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=$(LOG_DIR)/valgrind.log $(BIN_DIR)/$(EXENAME)
 
 log:
-	@echo "[Printing all log files]"
+	@echo "\n[Printing all log files]\n"
 	@for file in $(LOG_DIR)/*; do \
-		echo "[Filename: $$file]"; \
+		echo "\n[Filename: $$file]\n"; \
 		cat $$file; \
 	done
 
@@ -74,7 +74,9 @@ wipe : clean del
 fresh: wipe all 
 
 run: all
-	@echo "[Running the executable]"
+	@echo "\n[Running $(EXENAME) in $(DEFAULT_BUILD_TYPE) mode]\n"
 	@./$(BIN_DIR)/$(EXENAME)
 
-.PHONY: all cmake build clean wipe fresh run log check test lint valgrind
+precommit: lint check test
+
+.PHONY: all all-modes cmake build test check lint valgrind log clean del wipe fresh run precommit

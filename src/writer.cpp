@@ -7,7 +7,8 @@ template<typename T>
 std::mutex Writer<T>::rw_mutex;
 
 template<typename T>
-Writer<T>::Writer(uint8_t id, SharedData<T> &shared_data) : id(id), data(shared_data), turn(this->data.getSema()) {}
+Writer<T>::Writer(uint8_t id, SharedData<T> &shared_data) :
+    id(id), data(shared_data), turn(this->data.getSema()), write_count(0) {}
 
 
 template<typename T>

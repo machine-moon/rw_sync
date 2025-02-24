@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 template<typename T>
-SharedData<T>::SharedData(std::string logfile) : data(10, 0), size(10), turn(1), logfile(logfile) {}
+SharedData<T>::SharedData(const std::string &logfile) : data(10, 0), size(10), turn(1), logfile(logfile) {}
 
 template<typename T>
 SharedData<T>::~SharedData() {
@@ -30,11 +30,6 @@ SharedData<T>::~SharedData() {
 }
 
 template<typename T>
-std::vector<T> &SharedData<T>::getData() {
-    return this->data;
-}
-
-template<typename T>
 size_t SharedData<T>::getSize() const {
     return this->size;
 }
@@ -52,16 +47,6 @@ T SharedData<T>::Front() const {
 template<typename T>
 T SharedData<T>::Back() const {
     return this->data.back();
-}
-
-template<typename T>
-typename std::vector<T>::const_iterator SharedData<T>::Begin() const {
-    return this->data.begin();
-}
-
-template<typename T>
-typename std::vector<T>::const_iterator SharedData<T>::End() const {
-    return this->data.end();
 }
 
 template<typename T>

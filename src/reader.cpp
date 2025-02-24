@@ -11,7 +11,8 @@ template<typename T>
 uint8_t Reader<T>::readers = 0;
 
 template<typename T>
-Reader<T>::Reader(uint8_t id, SharedData<T> &data) : id(id), data(data), turn(this->data.getSema()) {}
+Reader<T>::Reader(uint8_t id, SharedData<T> &shared_data) :
+    id(id), data(shared_data), turn(this->data.getSema()), read_count(0) {}
 
 template<typename T>
 void Reader<T>::operator()() {
