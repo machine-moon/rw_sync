@@ -25,9 +25,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Set default build type if not specified
+# Set default build type if not specified
+IF (NOT DEFAULT_BUILD_TYPE)
+  SET(DEFAULT_BUILD_TYPE Release)
+ENDIF()
+
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE ${DEFAULT_BUILD_TYPE})
 endif()
+
 
 # Compiler-specific settings
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -49,13 +55,47 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -Wall -Wextra -Werror -pedantic")
 # Find all source files
 file(GLOB projectSources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-# Set project name if not defined
+# Set executable name if not defined
 if(NOT EXECUTABLE_NAME)
   set(EXECUTABLE_NAME ${PROJECT_NAME})
 endif()
+
+# Set executable name based on build type
+if(CMAKE_BUILD_TYPE STREQUAL DEFAULT_BUILD_TYPE)
+  set(EXECUTABLE_NAME ${EXECUTABLE_NAME})
+else()
+  set(EXECUTABLE_NAME ${EXECUTABLE_NAME}_${CMAKE_BUILD_TYPE})
+endif()
+
 
 # Create executable
 add_executable(${EXECUTABLE_NAME} ${projectSources})
 
 # Include header files
 target_include_directories(${EXECUTABLE_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+
+
+# testing
+
+
+# Enable testing
+enable_testing()
+
+# Fetch Google Test
+include(FetchContent)
+
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/releases/download/v1.16.0/googletest-1.16.0.tar.gz
+)
+
+FetchContent_MakeAvailable(googletest)
+
+# Add test executable
+file(GLOB test_sources tests/*.cpp)
+add_executable(testFiles ${test_sources})
+target_link_libraries(testFiles gtest gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(testFiles)

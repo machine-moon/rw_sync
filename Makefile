@@ -4,65 +4,77 @@ BIN_DIR = bin
 LOG_DIR = logs
 
 # OPTIONS
-CMAKE_MODE = Debug # Options: Release, Debug, MinSizeRel
-EXECUTABLE_NAME = zuper
+# Options: Debug, Release, MinSizeRel, RelWithDebInfo
+DEFAULT_BUILD_TYPE = RelWithDebInfo 
+MODE = RelWithDebInfo
+EXENAME = zuper
 
+# Find all source files and save to a variable
+FILES := $(shell find include src -type f \( -name '*.hpp' -o -name '*.cpp' \))
 
 all: build
 
+all-modes:
+	@echo "[Building all modes]"
+	@make MODE=RelWithDebInfo
+	@make MODE=Debug
+	@make MODE=Release
+	@make MODE=MinSizeRel
+
 cmake:
-	@echo "[Configuring with Ninja for $(CMAKE_MODE) mode]"
-	@cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(CMAKE_MODE) -DEXECUTABLE_NAME=$(EXECUTABLE_NAME)
+	@echo "[Configuring with Ninja for $(MODE) mode]"
+	@cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(MODE) -DDEFAULT_BUILD_TYPE=$(DEFAULT_BUILD_TYPE) -DEXECUTABLE_NAME=$(EXENAME)
 
 build: cmake
-	@echo "[Building project in $(CMAKE_MODE) mode]"
+	@echo "\n[Building project in $(MODE) mode]\n"
 	@cmake --build $(BUILD_DIR)
 
+test: 
+	@echo "[Running tests]"
+	@ctest --test-dir $(BUILD_DIR) -C $(MODE)
+	
+check:
+	@echo "[Running cppcheck]"
+	@cppcheck --enable=all --inconclusive --std=c++23 $(FILES)
+
+lint:
+	@echo "[Running clang-format (1/2)]"
+	@clang-format -i -verbose $(FILES)
+	@echo "[Running clang-tidy (2/2)]"
+	@clang-tidy $(FILES) -- -std=c++23
+
+valgrind:
+	@echo "[Checking for memory leaks]"
+	@mkdir -p $(LOG_DIR)
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=$(LOG_DIR)/valgrind.log $(BIN_DIR)/$(EXENAME)
+
+log:
+	@echo "[Printing all log files]"
+	@for file in $(LOG_DIR)/*; do \
+		echo "[Filename: $$file]"; \
+		cat $$file; \
+	done
+
+# remove runtime files
 clean:
 	@echo "[Cleaning bin directory]"
 	@rm -rf $(BIN_DIR)
 	@echo "[Cleaning log directory]"
 	@rm -rf $(LOG_DIR)
 
-wipe: clean
+# remove build files
+del: 
 	@echo "[Cleaning build directory]"
 	@rm -rf $(BUILD_DIR)
 
+# remove all generated files
+wipe : clean del
+
+# remove all generated files and rebuild (reboot the project)
 fresh: wipe all 
 
-# Run the latest executable (stat -c '%Y' to get the last modified time)
 run: all
 	@echo "[Running the executable]"
-	@./$(BIN_DIR)/$(EXECUTABLE_NAME)
+	@./$(BIN_DIR)/$(EXENAME)
 
-log:
-	@echo "[printing latest log file]"
-	@latest_file=$$(find $(LOG_DIR) -type f -printf '%T@ %p\n' | sort -k1,1nr | head -n 1 | cut -d' ' -f2); \
-		if [ -n "$$latest_file" ]; then \
-			echo "[Found log file: $$latest_file]"; \
-			cat $$latest_file; \
-		fi
-
-check:
-	@echo "[Running cppcheck]"
-	@cppcheck --enable=all --inconclusive --std=c++23 .
-
-test: 
-	@echo "[Running tests]"
-	@ctest -B $(BUILD_DIR) 
-	@ninja -C build test
-
-
-lint:
-	@files=$$(find include src -type f \( -name '*.hpp' -o -name '*.cpp' \)); \
-		echo "[Running clang-format (1/2)]"; \
-		clang-format -i -verbose $$files; \
-		echo "[Running clang-tidy (2/2)]"; \
-		clang-tidy $$files -- -std=c++23
-	
-valgrind:
-	@echo "[Checking for memory leaks]"
-	@mkdir -p $(LOG_DIR)
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=$(LOG_DIR)/valgrind.log $(BIN_DIR)/$(EXECUTABLE_NAME)
-
-.PHONY: all cmake build clean wipe fresh run log check lint valgrind
+.PHONY: all cmake build clean wipe fresh run log check test lint valgrind
